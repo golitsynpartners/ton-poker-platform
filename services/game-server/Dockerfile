@@ -4,7 +4,10 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
+COPY tsconfig.json ./
 COPY src/ ./src/
 
-EXPOSE 3002
-CMD ["npx", "tsx", "src/server.ts"]
+RUN npx tsc
+
+EXPOSE 10000
+CMD ["node", "dist/server.js"]
