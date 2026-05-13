@@ -11,13 +11,16 @@ const PORT = parseInt(process.env.GAME_SERVER_PORT ?? '3002', 10);
 const DATABASE_URL = process.env.DATABASE_URL!;
 const REDIS_URL = process.env.REDIS_URL!;
 
+const sslOpts = DATABASE_URL.includes('.render.com') ? { rejectUnauthorized: false } : false;
+const redisTls = REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined;
+
 async function start() {
-  const db = new Pool({ connectionString: DATABASE_URL, max: 10 });
+  const db = new Pool({ connectionString: DATABASE_URL, max: 10, ssl: sslOpts });
 
   // Two Redis clients required by socket.io redis adapter (pub + sub)
-  const pubClient = createClient({ url: REDIS_URL });
+  const pubClient = createClient({ url: REDIS_URL, socket: { tls: !!redisTls, ...(redisTls ?? {}) } });
   const subClient = pubClient.duplicate();
-  const stateClient = createClient({ url: REDIS_URL });
+  const stateClient = createClient({ url: REDIS_URL, socket: { tls: !!redisTls, ...(redisTls ?? {}) } });
   await Promise.all([pubClient.connect(), subClient.connect(), stateClient.connect()]);
 
   const httpServer = http.createServer();
