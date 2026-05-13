@@ -41,7 +41,11 @@ async function buildServer() {
   });
 
   // ─── Redis ─────────────────────────────────────────────────────────────────
-  const redis = createClient({ url: config.REDIS_URL });
+  const redis = createClient({
+    url: config.REDIS_URL,
+    socket: { tls: config.REDIS_URL.startsWith('rediss://'), rejectUnauthorized: false },
+  });
+  redis.on('error', err => console.error('[Redis] Error:', err.message));
   await redis.connect();
 
   // ─── TON Client ────────────────────────────────────────────────────────────
@@ -90,7 +94,6 @@ async function buildServer() {
   await app.register(fastifyRateLimit, {
     max: config.RATE_LIMIT_MAX,
     timeWindow: config.RATE_LIMIT_WINDOW_MS,
-    redis,
     keyGenerator: (req) => {
       const user = (req as any).user;
       return user?.userId ?? req.ip;
@@ -106,7 +109,6 @@ async function buildServer() {
   // ─── Health check ──────────────────────────────────────────────────────────
   app.get('/health', async () => {
     await db.query('SELECT 1');
-    await redis.ping();
     return { status: 'ok', timestamp: new Date().toISOString() };
   });
 
