@@ -11,6 +11,7 @@ import { clubRoutes } from './routes/clubs';
 import { walletRoutes } from './routes/wallet';
 import { adminRoutes } from './routes/admin';
 import { TonWalletService } from '../../packages/ton-sdk/src/ton-client';
+import { runMigrations } from './db/migrate';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -55,6 +56,15 @@ async function buildServer() {
     apiKey: config.TON_API_KEY,
     pollIntervalMs: 10_000,
   });
+
+  // Run DB migrations on startup (idempotent)
+  await runMigrations(db);
+
+  // Seed platform config if missing
+  await db.query(`
+    INSERT INTO platform_config (platform_wallet) VALUES ('placeholder')
+    ON CONFLICT (id) DO NOTHING
+  `);
 
   // Attach to fastify instance
   app.decorate('db', db);
