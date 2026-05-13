@@ -23,7 +23,12 @@ async function start() {
   const stateClient = createClient({ url: REDIS_URL, socket: { tls: !!redisTls, ...(redisTls ?? {}) } });
   await Promise.all([pubClient.connect(), subClient.connect(), stateClient.connect()]);
 
-  const httpServer = http.createServer();
+  const httpServer = http.createServer((req, res) => {
+    if (req.url === '/health' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok' }));
+    }
+  });
 
   const io = new SocketServer(httpServer, {
     cors: { origin: '*', credentials: true },
