@@ -1,12 +1,12 @@
 import { Server as SocketServer, Socket } from 'socket.io';
 import { createClient } from 'redis';
 import { v4 as uuidv4 } from 'uuid';
-import { shuffleDeck } from '../../../../packages/game-engine/src/deck';
+import { shuffleDeck } from '../game-engine/deck';
 import {
   TableState, HandState, PlayerState,
   buildHandState, validateAction, applyAction
-} from '../../../../packages/game-engine/src/game-state';
-import { evaluateBestHand, determineWinners } from '../../../../packages/game-engine/src/hand-evaluator';
+} from '../game-engine/game-state';
+import { evaluateBestHand, determineWinners } from '../game-engine/hand-evaluator';
 import { EVENTS, C2S_PlayerAction } from '../socket/events';
 
 const RECONNECT_WINDOW_MS = 30_000;

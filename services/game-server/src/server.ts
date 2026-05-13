@@ -3,7 +3,7 @@ import { Server as SocketServer } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Pool } from 'pg';
-import { verifyToken } from '../../api/src/middleware/auth';
+import { verifyToken } from './auth';
 import { TableManager } from './engine/table-manager';
 import { EVENTS } from './socket/events';
 
