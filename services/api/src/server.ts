@@ -10,7 +10,7 @@ import { authRoutes } from './routes/auth';
 import { clubRoutes } from './routes/clubs';
 import { walletRoutes } from './routes/wallet';
 import { adminRoutes } from './routes/admin';
-import { TonWalletService } from '../../packages/ton-sdk/src/ton-client';
+import { TonWalletService } from './services/ton-wallet.service';
 import { runMigrations } from './db/migrate';
 
 declare module 'fastify' {

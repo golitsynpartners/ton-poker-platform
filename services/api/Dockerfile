@@ -8,7 +8,6 @@ RUN cd services/api && npm install
 
 # Copy source
 COPY services/api/src/ ./services/api/src/
-COPY packages/ ./packages/
 
 EXPOSE 3001
 WORKDIR /app/services/api
