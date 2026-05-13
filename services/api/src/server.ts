@@ -38,6 +38,7 @@ async function buildServer() {
     max: config.DATABASE_POOL_MAX,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
+    ssl: config.DATABASE_URL.includes('.render.com') ? { rejectUnauthorized: false } : false,
   });
 
   // ─── Redis ─────────────────────────────────────────────────────────────────
